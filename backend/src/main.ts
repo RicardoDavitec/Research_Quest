@@ -1,0 +1,49 @@
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // Global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  // CORS configuration
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    credentials: true,
+  });
+
+  // Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('Campo Research Platform API')
+    .setDescription('API para Plataforma de Desenvolvimento de Questionários de Pesquisas de Campo')
+    .setVersion('0.1.0')
+    .addBearerAuth()
+    .addTag('auth', 'Autenticação e autorização')
+    .addTag('subgroups', 'Gestão de subgrupos de pesquisa')
+    .addTag('researchers', 'Gestão de pesquisadores')
+    .addTag('questions', 'Gestão de questões')
+    .addTag('questionnaires', 'Criação de questionários')
+    .addTag('surveys', 'Pesquisas operacionais')
+    .addTag('similarity', 'Detecção de similaridade')
+    .build();
+  
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  
+  console.log(`🚀 Application is running on: http://localhost:${port}`);
+  console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
+}
+
+bootstrap();
