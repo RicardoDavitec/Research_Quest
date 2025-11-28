@@ -35,12 +35,18 @@ const Login: React.FC = () => {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>📋 Campo Research Platform</h1>
-        <h2>Login</h2>
+        <div className="login-header">
+          <h1>📋 Campo Research Platform</h1>
+          <p className="login-subtitle">Sistema de Gestão de Pesquisas de Campo</p>
+        </div>
+        
+        <h2>Bem-vindo!</h2>
+        
         {error && <div className="error-message">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">📧 Email</label>
             <input
               type="email"
               id="email"
@@ -51,7 +57,7 @@ const Login: React.FC = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Senha</label>
+            <label htmlFor="password">🔒 Senha</label>
             <input
               type="password"
               id="password"
@@ -62,9 +68,37 @@ const Login: React.FC = () => {
             />
           </div>
           <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading ? '⏳ Entrando...' : '🚀 Entrar'}
           </button>
         </form>
+        
+        <div className="login-info">
+          <div className="info-card">
+            <strong>👤 Usuários de Teste:</strong>
+            <ul>
+              <li>
+                <strong>João Silva:</strong><br/>
+                Email: joao.silva@exemplo.com<br/>
+                Senha: senha@123
+              </li>
+              <li>
+                <strong>Ricardo David:</strong><br/>
+                Email: ricardo.david@exemplo.com<br/>
+                Senha: rdsenha123
+              </li>
+            </ul>
+          </div>
+          
+          <div className="features-info">
+            <strong>✨ Funcionalidades:</strong>
+            <ul>
+              <li>👥 Gestão de Pesquisadores</li>
+              <li>📁 Organização por Subgrupos</li>
+              <li>👔 Funções e Ocupações</li>
+              <li>❓ Questões com Detecção de Similaridade</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );

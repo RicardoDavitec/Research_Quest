@@ -3,31 +3,46 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .login-box {
   background: white;
   padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   width: 100%;
-  max-width: 400px;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
 }
 
 .login-box h1 {
-  text-align: center;
   color: #2c3e50;
-  margin-bottom: 10px;
-  font-size: 1.8rem;
+  margin: 0 0 10px 0;
+  font-size: 2rem;
+}
+
+.login-subtitle {
+  color: #7f8c8d;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
 .login-box h2 {
   text-align: center;
-  color: #7f8c8d;
-  margin-bottom: 30px;
-  font-size: 1.3rem;
-  font-weight: 400;
+  color: #667eea;
+  margin-bottom: 25px;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
 .error-message {
@@ -85,4 +100,64 @@
 .login-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.login-info {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.info-card, .features-info {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 4px solid #667eea;
+}
+
+.info-card strong, .features-info strong {
+  color: #2c3e50;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.info-card ul, .features-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-card li {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.info-card li:last-child {
+  margin-bottom: 0;
+}
+
+.info-card li strong {
+  color: #667eea;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+}
+
+.features-info li {
+  padding: 8px 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.features-info li:before {
+  content: '✓ ';
+  color: #4caf50;
+  font-weight: bold;
+  margin-right: 5px;
 }

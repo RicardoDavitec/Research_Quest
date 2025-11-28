@@ -18,15 +18,12 @@ export class SubgroupsService {
   }
 
   async findAll(): Promise<Subgroup[]> {
-    return await this.subgroupsRepository.find({
-      relations: ['researchers', 'questions'],
-    });
+    return await this.subgroupsRepository.find();
   }
 
   async findOne(id: string): Promise<Subgroup> {
     const subgroup = await this.subgroupsRepository.findOne({
       where: { id },
-      relations: ['researchers', 'questions'],
     });
 
     if (!subgroup) {

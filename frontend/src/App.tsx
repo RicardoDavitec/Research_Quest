@@ -17,20 +17,48 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route
-          path="/*"
+          path="/researchers"
           element={
             <PrivateRoute>
               <div className="app-layout">
                 <Sidebar />
-                <Routes>
-                  <Route path="/" element={<Navigate to="/researchers" />} />
-                  <Route path="/researchers" element={<Researchers />} />
-                  <Route path="/subgroups" element={<Subgroups />} />
-                  <Route path="/roles" element={<Roles />} />
-                  <Route path="/questions" element={<Questions />} />
-                </Routes>
+                <Researchers />
+              </div>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/subgroups"
+          element={
+            <PrivateRoute>
+              <div className="app-layout">
+                <Sidebar />
+                <Subgroups />
+              </div>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/roles"
+          element={
+            <PrivateRoute>
+              <div className="app-layout">
+                <Sidebar />
+                <Roles />
+              </div>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/questions"
+          element={
+            <PrivateRoute>
+              <div className="app-layout">
+                <Sidebar />
+                <Questions />
               </div>
             </PrivateRoute>
           }

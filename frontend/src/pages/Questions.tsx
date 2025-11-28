@@ -22,6 +22,7 @@ const Questions: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [checkingSimilarity, setCheckingSimilarity] = useState(false);
+  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     loadQuestions();
@@ -80,12 +81,17 @@ const Questions: React.FC = () => {
   const handleTextChange = (text: string) => {
     setFormData({ ...formData, text });
     
-    // Debounce para verificar similaridade
+    // Limpar timeout anterior
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    
+    // Configurar novo timeout para verificar similaridade
     const timeoutId = setTimeout(() => {
       checkSimilarity(text);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
+    }, 800);
+    
+    setDebounceTimeout(timeoutId);
   };
 
   const applyMergeAction = () => {
@@ -236,46 +242,147 @@ const Questions: React.FC = () => {
 
           {similarQuestions.length > 0 && (
             <div className="similarity-section">
-              <h3>⚠️ Questões Semelhantes Encontradas</h3>
+              <div className="similarity-header">
+                <h3>⚠️ Questões Semelhantes Encontradas ({similarQuestions.length})</h3>
+                <p className="similarity-description">
+                  Encontramos questões similares no banco de dados. Selecione uma abaixo e escolha uma ação.
+                </p>
+              </div>
+              
               <div className="similar-questions-list">
-                {similarQuestions.map((item) => (
-                  <div
-                    key={item.question.id}
-                    className={`similar-question-item ${selectedSimilarQuestion?.question.id === item.question.id ? 'selected' : ''}`}
-                    onClick={() => setSelectedSimilarQuestion(item)}
-                  >
-                    <div className="similarity-score">
-                      {(item.similarity * 100).toFixed(0)}% similar
+                {similarQuestions.map((item, index) => {
+                  const subgroup = subgroups.find(s => s.id === item.question.subgroupId);
+                  return (
+                    <div
+                      key={item.question.id}
+                      className={`similar-question-item ${selectedSimilarQuestion?.question.id === item.question.id ? 'selected' : ''}`}
+                      onClick={() => setSelectedSimilarQuestion(item)}
+                    >
+                      <div className="similarity-badge">
+                        <span className="similarity-score">{(item.similarity * 100).toFixed(1)}%</span>
+                        <span className="similarity-rank">#{index + 1}</span>
+                      </div>
+                      <div className="question-content">
+                        <div className="question-text">{item.question.text}</div>
+                        <div className="question-meta">
+                          <span className="meta-item">📋 Tipo: {item.question.type}</span>
+                          <span className="meta-item">👥 Subgrupo: {subgroup?.name || 'N/A'}</span>
+                        </div>
+                      </div>
+                      {selectedSimilarQuestion?.question.id === item.question.id && (
+                        <div className="selected-indicator">✓ Selecionada</div>
+                      )}
                     </div>
-                    <div className="question-text">{item.question.text}</div>
-                    <div className="question-meta">
-                      Tipo: {item.question.type}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              <div className="merge-actions">
-                <label>Ação a Tomar:</label>
-                <select
-                  value={mergeAction}
-                  onChange={(e) => setMergeAction(e.target.value as any)}
-                >
-                  <option value="keep">Manter questão atual</option>
-                  <option value="accept">Aceitar questão semelhante</option>
-                  <option value="merge">Mesclar (separar com |)</option>
-                  <option value="concatenate">Concatenar (juntar textos)</option>
-                  <option value="replace">Substituir pela semelhante</option>
-                </select>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={applyMergeAction}
-                  disabled={!selectedSimilarQuestion}
-                >
-                  Aplicar Ação
-                </button>
-              </div>
+              {selectedSimilarQuestion && (
+                <div className="merge-actions-card">
+                  <h4>🎯 Decisão sobre Similaridade</h4>
+                  <p className="action-description">
+                    Questão selecionada tem <strong>{(selectedSimilarQuestion.similarity * 100).toFixed(1)}%</strong> de similaridade.
+                  </p>
+                  
+                  <div className="action-options">
+                    <label className="action-radio">
+                      <input
+                        type="radio"
+                        name="mergeAction"
+                        value="keep"
+                        checked={mergeAction === 'keep'}
+                        onChange={(e) => setMergeAction(e.target.value as any)}
+                      />
+                      <div className="action-info">
+                        <strong>✋ Manter Atual</strong>
+                        <small>Ignorar similaridade e manter sua questão como está</small>
+                      </div>
+                    </label>
+
+                    <label className="action-radio">
+                      <input
+                        type="radio"
+                        name="mergeAction"
+                        value="accept"
+                        checked={mergeAction === 'accept'}
+                        onChange={(e) => setMergeAction(e.target.value as any)}
+                      />
+                      <div className="action-info">
+                        <strong>✅ Aceitar Semelhante</strong>
+                        <small>Substituir completamente pela questão semelhante</small>
+                      </div>
+                    </label>
+
+                    <label className="action-radio">
+                      <input
+                        type="radio"
+                        name="mergeAction"
+                        value="merge"
+                        checked={mergeAction === 'merge'}
+                        onChange={(e) => setMergeAction(e.target.value as any)}
+                      />
+                      <div className="action-info">
+                        <strong>🔀 Mesclar</strong>
+                        <small>Combinar ambas separadas por " | " (Ex: Texto atual | Texto semelhante)</small>
+                      </div>
+                    </label>
+
+                    <label className="action-radio">
+                      <input
+                        type="radio"
+                        name="mergeAction"
+                        value="concatenate"
+                        checked={mergeAction === 'concatenate'}
+                        onChange={(e) => setMergeAction(e.target.value as any)}
+                      />
+                      <div className="action-info">
+                        <strong>➕ Concatenar</strong>
+                        <small>Juntar os textos com um espaço (Ex: Texto atual Texto semelhante)</small>
+                      </div>
+                    </label>
+
+                    <label className="action-radio">
+                      <input
+                        type="radio"
+                        name="mergeAction"
+                        value="replace"
+                        checked={mergeAction === 'replace'}
+                        onChange={(e) => setMergeAction(e.target.value as any)}
+                      />
+                      <div className="action-info">
+                        <strong>🔄 Substituir</strong>
+                        <small>Substituir pela questão semelhante (igual a Aceitar)</small>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="action-buttons">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={applyMergeAction}
+                    >
+                      Aplicar Decisão
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        setSelectedSimilarQuestion(null);
+                        setSimilarQuestions([]);
+                      }}
+                    >
+                      Ignorar Todas
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {!selectedSimilarQuestion && (
+                <div className="no-selection-message">
+                  👆 Clique em uma questão acima para selecionar e escolher uma ação
+                </div>
+              )}
             </div>
           )}
 
