@@ -55,24 +55,30 @@ const Questions: React.FC = () => {
 
     setCheckingSimilarity(true);
     try {
-      const response = await api.post<any[]>('/similarity/compare', {
-        text1: text,
-        texts: questions.map(q => q.text),
+      const response = await api.post('/similarity/compare?threshold=0.3&limit=5', {
+        query: text,
+        documents: questions.map(q => ({
+          id: q.id,
+          text: q.text
+        })),
       });
 
-      // Filtrar questões com similaridade > 0.3
+      // Mapear resultados usando o ID retornado pelo backend
       const similar = response.data
-        .map((item: any, index: number) => ({
-          question: questions[index],
-          similarity: item.similarity || 0,
-        }))
-        .filter((item: SimilarQuestion) => item.similarity > 0.3 && item.question.text !== text)
-        .sort((a: SimilarQuestion, b: SimilarQuestion) => b.similarity - a.similarity)
-        .slice(0, 5);
+        .map((item: any) => {
+          const question = questions.find(q => q.id === item.id);
+          return question ? {
+            question,
+            similarity: item.score,
+          } : null;
+        })
+        .filter((item: SimilarQuestion | null): item is SimilarQuestion => item !== null && item.question.text !== text)
+        .sort((a: SimilarQuestion, b: SimilarQuestion) => b.similarity - a.similarity);
 
       setSimilarQuestions(similar);
     } catch (err: any) {
       console.error('Erro ao verificar similaridade:', err);
+      console.error('Detalhes:', err.response?.data);
     } finally {
       setCheckingSimilarity(false);
     }
