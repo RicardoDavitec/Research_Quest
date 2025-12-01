@@ -1,7 +1,6 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseModule } from './database/database.module';
+import { PrismaModule } from './database/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { SubgroupsModule } from './subgroups/subgroups.module';
 import { ResearchersModule } from './researchers/researchers.module';
@@ -22,7 +21,7 @@ import { RolesService } from './roles/roles.service';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    DatabaseModule,
+    PrismaModule,
     AuthModule,
     RolesModule,
     InstitutionsModule,

@@ -1,0 +1,254 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+// SQL Server não suporta enums nativos, usar strings com validação
+
+// Models
+model Institution {
+  id          String            @id @default(uuid()) @db.UniqueIdentifier
+  name        String            @db.NVarChar(200)
+  acronym     String?           @db.NVarChar(50)
+  type        String            @db.NVarChar(100)
+  cnpj        String            @unique @db.NVarChar(20)
+  address     String?           @db.NVarChar(200)
+  city        String?           @db.NVarChar(100)
+  state       String?           @db.NVarChar(2)
+  zipCode     String?           @db.NVarChar(10)
+  phone       String?           @db.NVarChar(20)
+  email       String?           @db.NVarChar(150)
+  website     String?           @db.NVarChar(200)
+  rector      String?           @db.NVarChar(100)
+  description String?           @db.Text
+  isActive    Boolean           @default(true) @db.Bit
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  projects    ResearchProject[]
+
+  @@map("institutions")
+}
+
+model ResearchProject {
+  id                      String         @id @default(uuid()) @db.UniqueIdentifier
+  name                    String         @db.NVarChar(200)
+  code                    String?        @db.NVarChar(50)
+  codeUUID                String         @unique @default(uuid()) @db.UniqueIdentifier
+  description             String?        @db.Text
+  area                    String?        @db.NVarChar(100)
+  startDate               DateTime?      @db.Date
+  endDate                 DateTime?      @db.Date
+  status                  String         @default("active") @db.NVarChar(50)
+  budget                  Decimal?       @db.Decimal(15, 2)
+  fundingAgency           String?        @db.NVarChar(100)
+  objectives              String?        @db.Text
+  expectedResults         String?        @db.Text
+  isActive                Boolean        @default(true) @db.Bit
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  
+  institutionId           String?        @db.UniqueIdentifier
+  institution             Institution?   @relation(fields: [institutionId], references: [id])
+  
+  responsibleResearcherId String?        @db.UniqueIdentifier
+  responsibleResearcher   Researcher?    @relation("ProjectResponsible", fields: [responsibleResearcherId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  subgroups               Subgroup[]
+  researchers             Researcher[]   @relation("ResearcherProjects")
+
+  @@map("research_projects")
+}
+
+model Subgroup {
+  id                String          @id @default(uuid()) @db.UniqueIdentifier
+  name              String          @unique @db.NVarChar(100)
+  description       String?         @db.NVarChar(500)
+  isActive          Boolean         @default(true) @db.Bit
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  researchProjectId String?         @db.UniqueIdentifier
+  researchProject   ResearchProject? @relation(fields: [researchProjectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  researchers       Researcher[]
+  questions         Question[]
+  fieldResearches   FieldResearch[]
+
+  @@map("subgroups")
+}
+
+model Role {
+  id          String       @id @default(uuid()) @db.UniqueIdentifier
+  name        String       @unique @db.NVarChar(50)
+  description String?      @db.NVarChar(255)
+  isActive    Boolean      @default(true) @db.Bit
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  researchers Researcher[]
+
+  @@map("roles")
+}
+
+model Researcher {
+  id                String           @id @default(uuid()) @db.UniqueIdentifier
+  name              String           @db.NVarChar(150)
+  email             String           @unique @db.NVarChar(150)
+  password          String           @db.NVarChar(255)
+  role              String           @default("researcher") @db.NVarChar(50) // admin, researcher, viewer
+  isActive          Boolean          @default(true) @db.Bit
+  phone             String?          @db.NVarChar(20)
+  institution       String?          @db.NVarChar(100)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  researchProjectId String?          @db.UniqueIdentifier
+  researchProject   ResearchProject? @relation("ResearcherProjects", fields: [researchProjectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  subgroupId        String?          @db.UniqueIdentifier
+  subgroup          Subgroup?        @relation(fields: [subgroupId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  roleId            String?          @db.UniqueIdentifier
+  roleEntity        Role?            @relation(fields: [roleId], references: [id])
+  
+  questions         Question[]
+  questionnaires    Questionnaire[]
+  surveys           Survey[]
+  responsibleProjects ResearchProject[] @relation("ProjectResponsible")
+  responsibleFieldResearches FieldResearch[]
+
+  @@map("researchers")
+}
+
+model Question {
+  id                    String             @id @default(uuid()) @db.UniqueIdentifier
+  text                  String             @db.NVarChar(1000)
+  type                  String             @db.NVarChar(50) // multiple_choice, yes_no, open_text, quantitative, qualitative, scale
+  visibility            String             @default("subgroup") @db.NVarChar(50) // private, subgroup, public
+  objective             String?            @db.NVarChar(500)
+  targetAudience        String?            @db.NVarChar(500)
+  targetGender          String             @default("all") @db.NVarChar(50) // male, female, other, all
+  targetEducationLevel  String             @default("all") @db.NVarChar(50) // none, elementary, high_school, undergraduate, graduate, postgraduate, all
+  minAge                Int?
+  maxAge                Int?
+  targetLocation        String?            @db.NVarChar(200)
+  options               String?            @db.Text
+  isActive              Boolean            @default(true) @db.Bit
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  
+  authorId              String             @db.UniqueIdentifier
+  author                Researcher         @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  subgroupId            String?            @db.UniqueIdentifier
+  subgroup              Subgroup?          @relation(fields: [subgroupId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  questionnaires        Questionnaire[]    @relation("QuestionnaireQuestions")
+  questionSequences     QuestionSequence[]
+
+  @@map("questions")
+}
+
+model Questionnaire {
+  id              String             @id @default(uuid()) @db.UniqueIdentifier
+  title           String             @db.NVarChar(200)
+  description     String?            @db.NVarChar(1000)
+  isActive        Boolean            @default(true) @db.Bit
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  
+  creatorId       String             @db.UniqueIdentifier
+  creator         Researcher         @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  subgroupId      String             @db.UniqueIdentifier
+  
+  fieldResearchId String?            @db.UniqueIdentifier
+  fieldResearch   FieldResearch?     @relation(fields: [fieldResearchId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  questions       Question[]         @relation("QuestionnaireQuestions")
+  surveys         Survey[]
+  questionSequences QuestionSequence[]
+
+  @@map("questionnaires")
+}
+
+model QuestionSequence {
+  id              String        @id @default(uuid()) @db.UniqueIdentifier
+  order           Int
+  isRequired      Boolean       @default(true) @db.Bit
+  isActive        Boolean       @default(true) @db.Bit
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  questionnaireId String        @db.UniqueIdentifier
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  questionId      String        @db.UniqueIdentifier
+  question        Question      @relation(fields: [questionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("question_sequences")
+}
+
+model FieldResearch {
+  id                  String          @id @default(uuid()) @db.UniqueIdentifier
+  name                String          @db.NVarChar(200)
+  code                String?         @db.NVarChar(50)
+  description         String?         @db.Text
+  location            String?         @db.NVarChar(100)
+  startDate           DateTime?       @db.Date
+  endDate             DateTime?       @db.Date
+  status              String          @default("planning") @db.NVarChar(50)
+  targetSampleSize    Int?
+  currentSampleSize   Int             @default(0)
+  methodology         String?         @db.NVarChar(100)
+  ethicsApproval      String?         @db.NVarChar(100)
+  observations        String?         @db.Text
+  isActive            Boolean         @default(true) @db.Bit
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  subgroupId          String?         @db.UniqueIdentifier
+  subgroup            Subgroup?       @relation(fields: [subgroupId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  responsibleId       String?         @db.UniqueIdentifier
+  responsible         Researcher?     @relation(fields: [responsibleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  questionnaires      Questionnaire[]
+
+  @@map("field_researches")
+}
+
+model Survey {
+  id                String           @id @default(uuid()) @db.UniqueIdentifier
+  title             String           @db.NVarChar(200)
+  description       String?          @db.NVarChar(1000)
+  objectives        String?          @db.NVarChar(1000)
+  targetAudience    String?          @db.NVarChar(500)
+  locations         String?          @db.NVarChar(500)
+  startDate         DateTime?        @db.DateTime2
+  endDate           DateTime?        @db.DateTime2
+  applicationMethod String           @db.NVarChar(50) // online, digital, printed, recorded, filmed, interview, phone
+  status            String           @default("planning") @db.NVarChar(50) // planning, in_progress, completed, cancelled
+  estimatedResponses Int?
+  actualResponses   Int              @default(0)
+  budget            Decimal?         @db.Decimal(15, 2)
+  notes             String?          @db.Text
+  isActive          Boolean          @default(true) @db.Bit
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  questionnaireId   String           @db.UniqueIdentifier
+  questionnaire     Questionnaire    @relation(fields: [questionnaireId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  coordinatorId     String           @db.UniqueIdentifier
+  coordinator       Researcher       @relation(fields: [coordinatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("surveys")
+}
