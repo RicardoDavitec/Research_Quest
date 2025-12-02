@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Login</title>
+</head>
+<body>
+    <h2>Teste de Login</h2>
+    <input type="text" id="email" value="admin@teste.com" placeholder="Email"><br><br>
+    <input type="password" id="password" value="senha123" placeholder="Senha"><br><br>
+    <button onclick="testLogin()">Testar Login</button>
+    <pre id="result"></pre>
+    
+    <script>
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultEl = document.getElementById('result');
+            
+            resultEl.textContent = 'Enviando...';
+            
+            try {
+                const response = await fetch('http://localhost:3001/auth/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultEl.textContent = ' LOGIN OK!\n' + JSON.stringify(data, null, 2);
+                    resultEl.style.color = 'green';
+                } else {
+                    resultEl.textContent = ' ERRO!\n' + JSON.stringify(data, null, 2);
+                    resultEl.style.color = 'red';
+                }
+            } catch (err) {
+                resultEl.textContent = ' ERRO DE REDE!\n' + err.message;
+                resultEl.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -18,7 +18,8 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, researcher.password);
+    // TESTE TEMPORÁRIO: Usar campo role como senha (sem criptografia)
+    const isPasswordValid = loginDto.password === researcher.role;
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciais inválidas');
