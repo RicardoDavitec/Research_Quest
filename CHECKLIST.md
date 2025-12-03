@@ -26,11 +26,11 @@
 - [x] Criar estrutura de monorepo (pnpm workspace)
 - [x] Configurar Turborepo
 - [x] Configurar Docker Compose (PostgreSQL + Redis + pgVector)
-- [ ] **Verificar instalação de ferramentas necessárias**
-  - [ ] Node.js >= 20.0.0
-  - [ ] pnpm >= 10.0.0
-  - [ ] Docker Desktop
-  - [ ] Git
+- [x] **Verificar instalação de ferramentas necessárias**
+  - [x] Node.js >= 20.0.0 (v24.11.1 instalado)
+  - [x] pnpm >= 10.0.0 (10.24.0 instalado)
+  - [x] Docker (v28.2.2 instalado no WSL Ubuntu)
+  - [x] Git (v2.51.2 instalado)
 - [ ] **Conectar ao banco de dados externo**
   - Host: 172.21.31.152
   - Port: 5432
