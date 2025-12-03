@@ -57,13 +57,14 @@
 - [ ] Configurar CommitLint
 
 ### 1.3 Dependências Backend
-- [ ] Instalar dependências NestJS core
-- [ ] Instalar Prisma ORM
-- [ ] Instalar Passport (JWT, Local Strategy)
-- [ ] Instalar Bull/BullMQ para filas
-- [ ] Instalar bcrypt para hash de senhas
-- [ ] Instalar class-validator e class-transformer
-- [ ] Instalar @nestjs/swagger para documentação API
+- [x] Instalar dependências NestJS core
+- [x] Instalar Prisma ORM (v5.22.0)
+- [x] Instalar Passport (JWT, Local Strategy)
+- [x] Instalar Bull/BullMQ para filas (v5.65.1)
+- [x] Instalar bcrypt para hash de senhas (v5.1.1)
+- [x] Instalar class-validator e class-transformer
+- [x] Instalar @nestjs/swagger para documentação API
+- [x] Gerar Prisma Client
 
 ### 1.4 Dependências Frontend
 - [ ] Instalar Next.js
