@@ -511,6 +511,78 @@ DELETE {{baseUrl}}/research-groups/ID_DO_GRUPO
 Authorization: Bearer {{accessToken}}
 
 ### ============================================
+### QUESTIONÁRIOS
+### ============================================
+
+### 59. Criar Questionário
+POST {{baseUrl}}/questionnaires
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Questionário de Satisfação com Atendimento Médico",
+  "description": "Este questionário avalia a satisfação dos pacientes com o atendimento recebido no ambulatório",
+  "type": "ONLINE",
+  "applicationLocation": "Ambulatório de Cardiologia - Hospital Central",
+  "applicationDate": "2024-12-20T14:00:00Z",
+  "estimatedDuration": 30,
+  "fieldSurveyId": "ID_DA_PESQUISA_DE_CAMPO"
+}
+
+### 60. Listar Questionários
+GET {{baseUrl}}/questionnaires
+Authorization: Bearer {{accessToken}}
+
+### 61. Listar Questionários com Filtros
+GET {{baseUrl}}/questionnaires?type=ONLINE&search=satisfação
+Authorization: Bearer {{accessToken}}
+
+### 62. Listar Questionários de uma Pesquisa de Campo
+GET {{baseUrl}}/questionnaires/field-survey/ID_DA_PESQUISA
+Authorization: Bearer {{accessToken}}
+
+### 63. Buscar Questionário por ID
+GET {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO
+Authorization: Bearer {{accessToken}}
+
+### 64. Atualizar Questionário
+PATCH {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Questionário de Satisfação - Atualizado",
+  "description": "Descrição atualizada do questionário",
+  "estimatedDuration": 45
+}
+
+### 65. Adicionar Participante ao Questionário
+POST {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO/participants
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "researcherId": "ID_DO_PESQUISADOR",
+  "role": "PESQUISADOR"
+}
+
+### 66. Listar Participantes do Questionário
+GET {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO/participants
+Authorization: Bearer {{accessToken}}
+
+### 67. Remover Participante do Questionário
+DELETE {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO/participants/ID_DO_PESQUISADOR
+Authorization: Bearer {{accessToken}}
+
+### 68. Obter Estatísticas do Questionário
+GET {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO/statistics
+Authorization: Bearer {{accessToken}}
+
+### 69. Deletar Questionário
+DELETE {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO
+Authorization: Bearer {{accessToken}}
+
+### ============================================
 ### NOTAS
 ### ============================================
 # 1. Substitua {{accessToken}} pelo token JWT retornado no login
