@@ -5,12 +5,16 @@ import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Public } from './decorators/public.decorator';
+import { CurrentUser } from './decorators/current-user.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
+@UseGuards(JwtAuthGuard)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @Post('signup')
   @ApiOperation({ summary: 'Cadastrar novo usuário e criar perfil de pesquisador' })
   @ApiResponse({ status: 201, description: 'Usuário criado com sucesso' })
@@ -20,6 +24,7 @@ export class AuthController {
     return this.authService.signUp(signUpDto);
   }
 
+  @Public()
   @Post('signin')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login de usuário - retorna access token e refresh token' })
@@ -29,6 +34,7 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
+  @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Renovar access token usando refresh token' })
@@ -38,6 +44,7 @@ export class AuthController {
     return this.authService.refreshTokens(refreshTokenDto);
   }
 
+  @Public()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Logout - revoga o refresh token atual' })
@@ -48,23 +55,22 @@ export class AuthController {
   }
 
   @Post('logout-all')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Logout de todos os dispositivos - revoga todos os refresh tokens do usuário' })
   @ApiResponse({ status: 200, description: 'Logout de todos os dispositivos realizado com sucesso' })
-  async logoutAll(@Request() req) {
-    await this.authService.revokeAllUserTokens(req.user.userId);
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  async logoutAll(@CurrentUser('userId') userId: string) {
+    await this.authService.revokeAllUserTokens(userId);
     return { message: 'Logout de todos os dispositivos realizado com sucesso' };
   }
 
   @Get('profile')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obter perfil do usuário autenticado' })
   @ApiResponse({ status: 200, description: 'Perfil retornado com sucesso' })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
-  async getProfile(@Request() req) {
-    return this.authService.getProfile(req.user.userId);
+  async getProfile(@CurrentUser('userId') userId: string) {
+    return this.authService.getProfile(userId);
   }
 }
