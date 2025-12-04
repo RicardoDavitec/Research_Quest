@@ -583,6 +583,77 @@ DELETE {{baseUrl}}/questionnaires/ID_DO_QUESTIONARIO
 Authorization: Bearer {{accessToken}}
 
 ### ============================================
+### PESQUISAS DE CAMPO (FIELD SURVEYS)
+### ============================================
+
+### 70. Criar Pesquisa de Campo
+POST {{baseUrl}}/field-surveys
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Pesquisa de Satisfação - Ambulatório de Cardiologia",
+  "description": "Pesquisa para avaliar a satisfação dos pacientes com o atendimento no ambulatório de cardiologia",
+  "location": "Hospital Central - Ambulatório de Cardiologia - 3º andar",
+  "startDate": "2024-12-15T08:00:00Z",
+  "endDate": "2024-12-20T18:00:00Z",
+  "researchGroupId": "ID_DO_GRUPO_DE_PESQUISA"
+}
+
+### 71. Listar Pesquisas de Campo
+GET {{baseUrl}}/field-surveys
+Authorization: Bearer {{accessToken}}
+
+### 72. Listar Pesquisas de Campo com Filtros
+GET {{baseUrl}}/field-surveys?search=satisfação
+Authorization: Bearer {{accessToken}}
+
+### 73. Listar Pesquisas de Campo de um Grupo
+GET {{baseUrl}}/field-surveys/research-group/ID_DO_GRUPO
+Authorization: Bearer {{accessToken}}
+
+### 74. Buscar Pesquisa de Campo por ID
+GET {{baseUrl}}/field-surveys/ID_DA_PESQUISA
+Authorization: Bearer {{accessToken}}
+
+### 75. Atualizar Pesquisa de Campo
+PATCH {{baseUrl}}/field-surveys/ID_DA_PESQUISA
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Pesquisa de Satisfação - Atualizado",
+  "location": "Hospital Central - 3º andar - Sala 301",
+  "endDate": "2024-12-25T18:00:00Z"
+}
+
+### 76. Adicionar Participante à Pesquisa de Campo
+POST {{baseUrl}}/field-surveys/ID_DA_PESQUISA/participants
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "researcherId": "ID_DO_PESQUISADOR",
+  "role": "PESQUISADOR"
+}
+
+### 77. Listar Participantes da Pesquisa de Campo
+GET {{baseUrl}}/field-surveys/ID_DA_PESQUISA/participants
+Authorization: Bearer {{accessToken}}
+
+### 78. Remover Participante da Pesquisa de Campo
+DELETE {{baseUrl}}/field-surveys/ID_DA_PESQUISA/participants/ID_DO_PESQUISADOR
+Authorization: Bearer {{accessToken}}
+
+### 79. Obter Estatísticas da Pesquisa de Campo
+GET {{baseUrl}}/field-surveys/ID_DA_PESQUISA/statistics
+Authorization: Bearer {{accessToken}}
+
+### 80. Deletar Pesquisa de Campo
+DELETE {{baseUrl}}/field-surveys/ID_DA_PESQUISA
+Authorization: Bearer {{accessToken}}
+
+### ============================================
 ### NOTAS
 ### ============================================
 # 1. Substitua {{accessToken}} pelo token JWT retornado no login
