@@ -443,6 +443,74 @@ DELETE {{baseUrl}}/projects/ID_DO_PROJETO
 Authorization: Bearer {{accessToken}}
 
 ### ============================================
+### GRUPOS DE PESQUISA (RESEARCH GROUPS)
+### ============================================
+
+### 48. Criar Grupo de Pesquisa
+POST {{baseUrl}}/research-groups
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Grupo de Estudo sobre Qualidade de Vida",
+  "description": "Este grupo foca em pesquisas relacionadas à qualidade de vida em comunidades urbanas e rurais, investigando fatores socioeconômicos, acesso a serviços e bem-estar.",
+  "projectId": "ID_DO_PROJETO",
+  "coordinatorId": "ID_DO_PESQUISADOR_COORDENADOR"
+}
+
+### 49. Listar Grupos de Pesquisa
+GET {{baseUrl}}/research-groups
+Authorization: Bearer {{accessToken}}
+
+### 50. Listar Grupos com Filtros
+GET {{baseUrl}}/research-groups?projectId=ID_DO_PROJETO&search=qualidade
+Authorization: Bearer {{accessToken}}
+
+### 51. Listar Grupos de um Projeto Específico
+GET {{baseUrl}}/research-groups/project/ID_DO_PROJETO
+Authorization: Bearer {{accessToken}}
+
+### 52. Buscar Grupo por ID
+GET {{baseUrl}}/research-groups/ID_DO_GRUPO
+Authorization: Bearer {{accessToken}}
+
+### 53. Atualizar Grupo
+PATCH {{baseUrl}}/research-groups/ID_DO_GRUPO
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Grupo de Pesquisa em Saúde Coletiva",
+  "description": "Descrição atualizada do grupo com novo foco de pesquisa."
+}
+
+### 54. Adicionar Membro ao Grupo
+POST {{baseUrl}}/research-groups/ID_DO_GRUPO/members
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "researcherId": "ID_DO_PESQUISADOR",
+  "role": "PESQUISADOR"
+}
+
+### 55. Listar Membros do Grupo
+GET {{baseUrl}}/research-groups/ID_DO_GRUPO/members
+Authorization: Bearer {{accessToken}}
+
+### 56. Remover Membro do Grupo
+DELETE {{baseUrl}}/research-groups/ID_DO_GRUPO/members/ID_DO_PESQUISADOR
+Authorization: Bearer {{accessToken}}
+
+### 57. Obter Estatísticas do Grupo
+GET {{baseUrl}}/research-groups/ID_DO_GRUPO/statistics
+Authorization: Bearer {{accessToken}}
+
+### 58. Deletar Grupo de Pesquisa
+DELETE {{baseUrl}}/research-groups/ID_DO_GRUPO
+Authorization: Bearer {{accessToken}}
+
+### ============================================
 ### NOTAS
 ### ============================================
 # 1. Substitua {{accessToken}} pelo token JWT retornado no login
