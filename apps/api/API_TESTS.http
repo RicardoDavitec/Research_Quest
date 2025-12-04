@@ -654,6 +654,79 @@ DELETE {{baseUrl}}/field-surveys/ID_DA_PESQUISA
 Authorization: Bearer {{accessToken}}
 
 ### ============================================
+### APROVAÇÕES (APPROVALS)
+### ============================================
+
+### 81. Criar Solicitação de Aprovação
+POST {{baseUrl}}/approvals
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "type": "QUESTION_EDIT",
+  "requesterId": "ID_DO_SOLICITANTE",
+  "questionId": "ID_DA_QUESTAO",
+  "requestData": {
+    "oldValue": "Qual é o seu nome?",
+    "newValue": "Qual é o seu nome completo?",
+    "reason": "Necessidade de informação mais detalhada"
+  },
+  "comments": "Esta alteração é necessária para melhorar a qualidade dos dados coletados"
+}
+
+### 82. Listar Todas as Solicitações
+GET {{baseUrl}}/approvals
+Authorization: Bearer {{accessToken}}
+
+### 83. Listar Solicitações com Filtros
+GET {{baseUrl}}/approvals?status=PENDENTE&type=QUESTION_EDIT
+Authorization: Bearer {{accessToken}}
+
+### 84. Listar Solicitações Pendentes
+GET {{baseUrl}}/approvals/pending
+Authorization: Bearer {{accessToken}}
+
+### 85. Listar Solicitações de um Solicitante
+GET {{baseUrl}}/approvals/requester/ID_DO_SOLICITANTE
+Authorization: Bearer {{accessToken}}
+
+### 86. Listar Solicitações de um Aprovador
+GET {{baseUrl}}/approvals/approver/ID_DO_APROVADOR
+Authorization: Bearer {{accessToken}}
+
+### 87. Buscar Solicitação por ID
+GET {{baseUrl}}/approvals/ID_DA_SOLICITACAO
+Authorization: Bearer {{accessToken}}
+
+### 88. Revisar Solicitação - Aprovar
+PATCH {{baseUrl}}/approvals/ID_DA_SOLICITACAO/review?approverId=ID_DO_APROVADOR
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "APROVADO",
+  "comments": "Solicitação aprovada. A alteração está de acordo com as diretrizes do projeto."
+}
+
+### 89. Revisar Solicitação - Rejeitar
+PATCH {{baseUrl}}/approvals/ID_DA_SOLICITACAO/review?approverId=ID_DO_APROVADOR
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "REJEITADO",
+  "comments": "Solicitação rejeitada. A alteração não está de acordo com as diretrizes do projeto."
+}
+
+### 90. Obter Estatísticas de Aprovações
+GET {{baseUrl}}/approvals/statistics
+Authorization: Bearer {{accessToken}}
+
+### 91. Cancelar Solicitação
+DELETE {{baseUrl}}/approvals/ID_DA_SOLICITACAO?requesterId=ID_DO_SOLICITANTE
+Authorization: Bearer {{accessToken}}
+
+### ============================================
 ### NOTAS
 ### ============================================
 # 1. Substitua {{accessToken}} pelo token JWT retornado no login
