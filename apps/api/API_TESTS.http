@@ -727,6 +727,65 @@ DELETE {{baseUrl}}/approvals/ID_DA_SOLICITACAO?requesterId=ID_DO_SOLICITANTE
 Authorization: Bearer {{accessToken}}
 
 ### ============================================
+### NOTIFICAÇÕES (NOTIFICATIONS)
+### ============================================
+
+### 92. Criar Notificação
+POST {{baseUrl}}/notifications
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "type": "APPROVAL_REQUEST",
+  "title": "Nova solicitação de aprovação",
+  "message": "O pesquisador João Silva solicitou aprovação para editar uma questão.",
+  "senderId": "ID_DO_REMETENTE",
+  "receiverId": "ID_DO_DESTINATARIO",
+  "relatedId": "ID_DA_SOLICITACAO",
+  "relatedType": "ApprovalRequest"
+}
+
+### 93. Listar Todas as Notificações
+GET {{baseUrl}}/notifications
+Authorization: Bearer {{accessToken}}
+
+### 94. Listar Notificações com Filtros
+GET {{baseUrl}}/notifications?receiverId=ID_DO_DESTINATARIO&read=false
+Authorization: Bearer {{accessToken}}
+
+### 95. Listar Notificações Não Lidas
+GET {{baseUrl}}/notifications/unread/ID_DO_DESTINATARIO
+Authorization: Bearer {{accessToken}}
+
+### 96. Obter Contadores de Notificações
+GET {{baseUrl}}/notifications/count/ID_DO_DESTINATARIO
+Authorization: Bearer {{accessToken}}
+
+### 97. Buscar Notificação por ID
+GET {{baseUrl}}/notifications/ID_DA_NOTIFICACAO
+Authorization: Bearer {{accessToken}}
+
+### 98. Marcar Notificação como Lida
+PATCH {{baseUrl}}/notifications/ID_DA_NOTIFICACAO/read
+Authorization: Bearer {{accessToken}}
+
+### 99. Marcar Notificação como Não Lida
+PATCH {{baseUrl}}/notifications/ID_DA_NOTIFICACAO/unread
+Authorization: Bearer {{accessToken}}
+
+### 100. Marcar Todas as Notificações como Lidas
+PATCH {{baseUrl}}/notifications/mark-all-read/ID_DO_DESTINATARIO
+Authorization: Bearer {{accessToken}}
+
+### 101. Deletar Notificação
+DELETE {{baseUrl}}/notifications/ID_DA_NOTIFICACAO
+Authorization: Bearer {{accessToken}}
+
+### 102. Deletar Todas as Notificações
+DELETE {{baseUrl}}/notifications/all/ID_DO_DESTINATARIO
+Authorization: Bearer {{accessToken}}
+
+### ============================================
 ### NOTAS
 ### ============================================
 # 1. Substitua {{accessToken}} pelo token JWT retornado no login
