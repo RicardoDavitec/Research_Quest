@@ -192,29 +192,34 @@ export class QuestionsController {
     @Body('defaultOrigin') defaultOrigin?: string,
     @Body('researchGroupId') researchGroupId?: string,
   ) {
-    if (!file) {
-      throw new BadRequestException('Nenhum arquivo foi enviado');
+    // Validar arquivo antes de processar
+    this.fileParserService.validateFileUpload(file, ['xlsx', 'xls'], 10);
+
+    try {
+      // Parsear Excel
+      const questions = await this.fileParserService.parseExcel(file.buffer);
+
+      // Importar questões
+      const result = await this.questionsService.importQuestions(userId, {
+        questions,
+        defaultOrigin: defaultOrigin || 'EXCEL_IMPORT',
+        researchGroupId,
+      });
+
+      return {
+        message: 'Importação concluída com sucesso',
+        fileName: file.originalname,
+        fileSize: `${(file.size / 1024).toFixed(2)}KB`,
+        processedAt: new Date().toISOString(),
+        ...result,
+      };
+    } catch (error) {
+      // Se erro contém informações estruturadas, retornar
+      if (error.response && typeof error.response === 'object') {
+        throw new BadRequestException(error.response);
+      }
+      throw error;
     }
-
-    if (!file.originalname.match(/\.(xlsx|xls)$/)) {
-      throw new BadRequestException('Apenas arquivos Excel (.xlsx, .xls) são permitidos');
-    }
-
-    // Parsear Excel
-    const questions = await this.fileParserService.parseExcel(file.buffer);
-
-    // Importar questões
-    const result = await this.questionsService.importQuestions(userId, {
-      questions,
-      defaultOrigin: defaultOrigin || 'EXCEL_IMPORT',
-      researchGroupId,
-    });
-
-    return {
-      message: 'Importação concluída',
-      fileName: file.originalname,
-      ...result,
-    };
   }
 
   @Post('upload/csv')
@@ -254,29 +259,34 @@ export class QuestionsController {
     @Body('defaultOrigin') defaultOrigin?: string,
     @Body('researchGroupId') researchGroupId?: string,
   ) {
-    if (!file) {
-      throw new BadRequestException('Nenhum arquivo foi enviado');
+    // Validar arquivo antes de processar
+    this.fileParserService.validateFileUpload(file, ['csv'], 10);
+
+    try {
+      // Parsear CSV
+      const questions = await this.fileParserService.parseCsv(file.buffer);
+
+      // Importar questões
+      const result = await this.questionsService.importQuestions(userId, {
+        questions,
+        defaultOrigin: defaultOrigin || 'CSV_IMPORT',
+        researchGroupId,
+      });
+
+      return {
+        message: 'Importação concluída com sucesso',
+        fileName: file.originalname,
+        fileSize: `${(file.size / 1024).toFixed(2)}KB`,
+        processedAt: new Date().toISOString(),
+        ...result,
+      };
+    } catch (error) {
+      // Se erro contém informações estruturadas, retornar
+      if (error.response && typeof error.response === 'object') {
+        throw new BadRequestException(error.response);
+      }
+      throw error;
     }
-
-    if (!file.originalname.match(/\.csv$/)) {
-      throw new BadRequestException('Apenas arquivos CSV são permitidos');
-    }
-
-    // Parsear CSV
-    const questions = await this.fileParserService.parseCsv(file.buffer);
-
-    // Importar questões
-    const result = await this.questionsService.importQuestions(userId, {
-      questions,
-      defaultOrigin: defaultOrigin || 'CSV_IMPORT',
-      researchGroupId,
-    });
-
-    return {
-      message: 'Importação concluída',
-      fileName: file.originalname,
-      ...result,
-    };
   }
 
   // ===== ENDPOINTS DE TEMPLATES =====
